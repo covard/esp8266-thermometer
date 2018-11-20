@@ -103,7 +103,6 @@ String load_data(String url) {
 }
 
 void fetch_weather_data() {
-
   String url = "http://api.openweathermap.org/data/2.5/weather?q=" + String(configuration.city) + "," + String(configuration.countrycode)+ "&units=" + String(configuration.units) + "&APPID=" + String(configuration.apikey);
   Serial.println(url);
   String str_current_weather = load_data(url);
@@ -118,7 +117,6 @@ void fetch_weather_data() {
   Serial.println("Stepped out 2");
 
   process_forecast_weather_json(forecast_weather);
-
 
   Serial.println(current_weather.weather_id);
   Serial.println(current_weather.weather_main);
