@@ -5,7 +5,7 @@
 #include <IPAddress.h>
 
 void handle_network_tasks() {
-  
+
   String header;
   WiFiClient client = server.available();   // Listen for incoming clients
   if (client) {                             // If a new client connects,
@@ -15,14 +15,14 @@ void handle_network_tasks() {
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
         Serial.write(c);                    // print it out the serial monitor
-        
+
         if (header.length() <= MAX_REQUEST_LENGTH) {
            header += c;
-        } else { 
+        } else {
           Serial.println("\nRequest too long. Dropping connection.");
-          break; 
+          break;
         }
-        
+
         if (c == '\n') {                    // if the byte is a newline character
           // if the current line is blank, you got two newline characters in a row.
           // that's the end of the client HTTP request, so send a response:
@@ -35,18 +35,18 @@ void handle_network_tasks() {
               client.println("Content-type:text/html");
               client.println("Connection: close");
               client.println();
-              client.println(print_page(configuration.city, configuration.countrycode, configuration.apikey));   
+              client.println(print_page(configuration.city, configuration.countrycode, configuration.apikey, configuration.units));
             }
             else if (header.substring(0, 17) == "GET /measurements") {
                 char output[500];
                 StaticJsonBuffer<500> jsonBuffer;
-              
+
                 JsonObject& root = jsonBuffer.createObject();
-                
+
                 JsonObject& inside = root.createNestedObject("inside");
                 inside.set("temperature", temperature);
                 inside.set("humidity", humidity);
-              
+
                 JsonObject& outside = root.createNestedObject("outside");
                 outside.set("temperature", current_weather.temp);
                 outside.set("humidity", current_weather.humidity);
@@ -54,7 +54,7 @@ void handle_network_tasks() {
                 outside.set("temp_min", current_weather.temp_min);
                 outside.set("temp_max", current_weather.temp_max);
                 outside.set("pressure", current_weather.pressure);
-              
+
                 root.prettyPrintTo(output);
                 client.println(output);
             } else {
@@ -62,9 +62,9 @@ void handle_network_tasks() {
               client.println("Content-type:text/html");
               client.println("Connection: close");
               client.println();
-              client.println(print_page(configuration.city, configuration.countrycode, configuration.apikey));   
+              client.println(print_page(configuration.city, configuration.countrycode, configuration.apikey + configuration.units));
             }
-            
+
             break;
           } else { // if you got a newline, then clear currentLine
             currentLine = "";
@@ -79,5 +79,5 @@ void handle_network_tasks() {
     // Close the connection
     client.stop();
     Serial.println("Client disconnected.");
-  } 
+  }
 }

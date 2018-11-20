@@ -1,4 +1,4 @@
-String print_page(String city, String countrycode, String apikey) {
+String print_page(String city, String countrycode, String apikey, String units) {
   write_header("web_page()");
   String webpage = "<!DOCTYPE html>\n"
 "<html lang=\"en\">\n"
@@ -26,6 +26,8 @@ String print_page(String city, String countrycode, String apikey) {
 "        <input type=\"text\" name=\"countrycode\" value=\"" + countrycode + "\"><br><br>\n"
 "        <h3>OpenWeatherMap API Key</h3>\n"
 "        <input type=\"text\" name=\"apikey\" value=\"" + apikey + "\"><br><br>\n"
+"        <h3>Units</h3>\n"
+"        <input type\"text\" name=\"units\" value=\"" + units + "\""
 "        <button>Submit</button>\n"
 "      </form>\n"
 "    </div>\n"

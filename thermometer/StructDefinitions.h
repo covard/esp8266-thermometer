@@ -2,6 +2,7 @@ struct config_data {
     char city[city_len]="";
     char countrycode[countrycode_len]="";
     char apikey[apikey_len]="";
+    char units[units_len]="";
 };
 
 struct weather_data {
@@ -20,7 +21,7 @@ struct weather_data {
     int rain = 0;
     int snow = 0;
     long dt = 0;
-    long sys_sunrise = 0; 
+    long sys_sunrise = 0;
     long sys_sunset = 0;
     String error_data = "";
 };

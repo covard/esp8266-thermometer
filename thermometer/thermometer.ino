@@ -7,6 +7,7 @@
 #define weather_api_max_field_size 64 //seconds
 #define fetch_weather_clock 60        //seconds
 #define update_display_clock 300      //seconds
+#define units_len 10                  //byte
 
 #include "Log.h"
 #include <ESP8266WiFi.h>
@@ -43,7 +44,7 @@ void setup() {
   write_header("setup()");
   Serial.begin(115200);
   WiFi.hostname("ESP8266-Weatherstation");
-  EEPROM.begin(city_len + countrycode_len + apikey_len);
+  EEPROM.begin(city_len + countrycode_len + apikey_len + units_len);
   setup_display(update_display_clock);
   WiFiManager wifiManager;
   wifiManager.setTimeout(300);
@@ -53,10 +54,10 @@ void setup() {
     delay(3000);
     //reset and try again, or maybe put it to deep sleep
     ESP.restart();
-  } 
+  }
 
   Serial.println("Connected.");
-  ipaddress = WiFi.localIP().toString(); 
+  ipaddress = WiFi.localIP().toString();
   read_config_from_storage();
   setup_temperature_sensor(temp_measurement_clock);
   read_temp();

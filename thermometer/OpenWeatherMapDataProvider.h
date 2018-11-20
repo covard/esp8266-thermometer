@@ -4,24 +4,24 @@
 #include <math.h>
 
 Ticker get_weather;
-                          
+
 void process_current_weather_json(String current_weather_json) {
   if (current_weather.error_data != "") {
     return;
   }
-  
-  const size_t bufferSize = JSON_ARRAY_SIZE(1) + 
-                          3*JSON_OBJECT_SIZE(1) + 
-                          2*JSON_OBJECT_SIZE(2) + 
-                          JSON_OBJECT_SIZE(4) + 
-                          JSON_OBJECT_SIZE(5) + 
-                          JSON_OBJECT_SIZE(6) + 
-                          JSON_OBJECT_SIZE(14) + 
+
+  const size_t bufferSize = JSON_ARRAY_SIZE(1) +
+                          3*JSON_OBJECT_SIZE(1) +
+                          2*JSON_OBJECT_SIZE(2) +
+                          JSON_OBJECT_SIZE(4) +
+                          JSON_OBJECT_SIZE(5) +
+                          JSON_OBJECT_SIZE(6) +
+                          JSON_OBJECT_SIZE(14) +
                           430; //size calculation for our specific json type
-                          
+
   DynamicJsonBuffer jsonBuffer(bufferSize);
   JsonObject& root = jsonBuffer.parseObject(current_weather_json);
-  
+
   strncpy(current_weather.weather_id, root["weather"][0]["id"], weather_api_max_field_size);
   strncpy(current_weather.weather_main, root["weather"][0]["main"], weather_api_max_field_size);
   strncpy(current_weather.weather_description, root["weather"][0]["description"], weather_api_max_field_size);
@@ -36,7 +36,7 @@ void process_current_weather_json(String current_weather_json) {
   current_weather.rain = root["rain"]["rain.3h"];
   current_weather.snow = root["snow"]["snow.3h"];
   current_weather.dt = root["dt"];
-  current_weather.sys_sunrise = root["sys"]["sunrise"]; 
+  current_weather.sys_sunrise = root["sys"]["sunrise"];
   current_weather.sys_sunset = root["sys"]["sunset"];
 }
 
@@ -45,7 +45,7 @@ void process_forecast_weather_json(String forecast_json) {
   if (current_weather.error_data != "") {
     return;
   }
-  
+
   String temp_data = "";
   int end = 0;
   int start = 0;
@@ -103,22 +103,22 @@ String load_data(String url) {
 }
 
 void fetch_weather_data() {
-  
-  String url = "http://api.openweathermap.org/data/2.5/weather?q=" + String(configuration.city) + "," + String(configuration.countrycode)+ "&units=metric&APPID=" + String(configuration.apikey);
+
+  String url = "http://api.openweathermap.org/data/2.5/weather?q=" + String(configuration.city) + "," + String(configuration.countrycode)+ "&units=" + String(configuration.units) + "&APPID=" + String(configuration.apikey);
   Serial.println(url);
   String str_current_weather = load_data(url);
   Serial.println("Stepped out 1");
   process_current_weather_json(str_current_weather);
   str_current_weather = "";
-  url = ""; 
+  url = "";
 
-  String forecast_url = "http://api.openweathermap.org/data/2.5/forecast?q=" + String(configuration.city) + "," + String(configuration.countrycode)+ "&units=metric&APPID=" + String(configuration.apikey)  + "&cnt=9";
+  String forecast_url = "http://api.openweathermap.org/data/2.5/forecast?q=" + String(configuration.city) + "," + String(configuration.countrycode)+ "&units=" + String(configuration.units) + "&APPID=" + String(configuration.apikey)  + "&cnt=9";
   Serial.println(forecast_url);
   String forecast_weather = load_data(forecast_url);
   Serial.println("Stepped out 2");
 
   process_forecast_weather_json(forecast_weather);
-    
+
 
   Serial.println(current_weather.weather_id);
   Serial.println(current_weather.weather_main);
@@ -137,7 +137,7 @@ void fetch_weather_data() {
   Serial.println(current_weather.dt);
   Serial.println(current_weather.sys_sunrise);
   Serial.println(current_weather.sys_sunset);
-  
+
   time_to_fetch_weather_data = false;
 }
 

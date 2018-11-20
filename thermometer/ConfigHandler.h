@@ -1,18 +1,19 @@
 
-#if city_len + countrycode_len + apikey_len > 4096
+#if city_len + countrycode_len + apikey_len + units_len > 4096
   #error "Maximum flash memory amount exceeded"
 #endif
 
 #include <EEPROM.h>
 
 void write_config(String data[], int data_length) {
-  
+
   write_header("write_config()");
   String key = "";
   String value = "";
   char city_trn[city_len]="";
   char countrycode_trn[countrycode_len]="";
   char apikey_trn[apikey_len]="";
+  char units_trn[units_len]="";
 
   for (int i = 0; i < data_length; i++) {
       key = data[i].substring(0, data[i].indexOf("="));
@@ -44,35 +45,40 @@ void write_config(String data[], int data_length) {
         sanitized_value.toCharArray(apikey_trn, apikey_len);
         strncpy(configuration.apikey, apikey_trn, apikey_len);
       }
+      else if (key == "units") {
+        sanitized_value.toCharArray(units_trn, units_len);
+        strncopy(configuration.units, units_trn, units_len);
+      }
   }
 
   EEPROM.put(0,configuration);
-  EEPROM.commit();  
+  EEPROM.commit();
 }
 
 void read_config_from_storage() {
-  
+
   write_header("read_config_from_storage()");
   EEPROM.get(0,configuration);
-  
+
   Serial.println("Current configuration is:");
   Serial.println(configuration.city);
   Serial.println(configuration.countrycode);
   Serial.println(configuration.apikey);
+  Serial.println(configuration.units);
 }
 
 void process_data(String header) {
-  
+
   write_header("process_data()");
   String data = header.substring(header.indexOf("?")+1, header.indexOf(" HTTP/1.1"));
   String remaining_data = data;
   String data_pair = "";
-  
+
   Serial.print("Data received: ");
   Serial.println(data);
-  
+
   int data_pair_count = 1;
-  if (data.length() > 0) { 
+  if (data.length() > 0) {
     for (int i = 0; i < data.length(); i++) {
       if (data.charAt(i) == '&') {
         data_pair_count++;
@@ -80,7 +86,7 @@ void process_data(String header) {
     }
     Serial.println("data_pairs detected: ");
     Serial.println(data_pair_count);
-    
+
     String data_pairs[data_pair_count];
     int index = 0;
     while (remaining_data.indexOf("&")>=0) {
